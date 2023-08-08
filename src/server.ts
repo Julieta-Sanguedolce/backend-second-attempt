@@ -1,21 +1,15 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import {
-  addDummyDbItems,
-  addDbItem,
-  getAllDbItems,
-  getDbItemById,
-  DbItem,
-  updateDbItemById,
-} from "./db";
-import filePath from "./filePath";
 
-// loading in some dummy items into the database
-// (comment out if desired, or change the number)
-addDummyDbItems(20);
 
 const app = express();
+
+const thingsToDo = [
+  {id:1, action: "Read Selene", date: "08/08/2023", completed: "No"},
+  {id:2, action: "Finish todo app", date: "05/08/2023", completed: "Yes"},
+  {id:3, action: "Plan trip", date: "10/08/2023", completed: "No"}];
+
 
 /** Parses JSON data in a request automatically */
 app.use(express.json());
@@ -28,56 +22,26 @@ dotenv.config();
 // use the environment variable PORT, or 4000 as a fallback
 const PORT_NUMBER = process.env.PORT ?? 4000;
 
-// API info page
 app.get("/", (req, res) => {
-  const pathToFile = filePath("../public/index.html");
-  res.sendFile(pathToFile);
+res.json(thingsToDo)
 });
 
-// GET /items
-app.get("/items", (req, res) => {
-  const allSignatures = getAllDbItems();
-  res.status(200).json(allSignatures);
-});
+app.post("/", (req,res) => {
+  const receivedTodo = req.body;
+  thingsToDo.push(receivedTodo);
+  res.send(`I now have ${thingsToDo.length} todos`)
+})
 
-// POST /items
-app.post<{}, {}, DbItem>("/items", (req, res) => {
-  // to be rigorous, ought to handle non-conforming request bodies
-  // ... but omitting this as a simplification
-  const postData = req.body;
-  const createdSignature = addDbItem(postData);
-  res.status(201).json(createdSignature);
-});
 
-// GET /items/:id
-app.get<{ id: string }>("/items/:id", (req, res) => {
-  const matchingSignature = getDbItemById(parseInt(req.params.id));
-  if (matchingSignature === "not found") {
-    res.status(404).json(matchingSignature);
-  } else {
-    res.status(200).json(matchingSignature);
-  }
-});
+//not finished - need to add logic in app to delete
+// app.delete("/",(req,res)=> {
+//   const toDelete = parseInt(req.params.id);
+//   let index = thingsToDo.findIndex((task)=>task.id === toDelete) 
+//   thingsToDo.splice(index,1);
+//   res.send("task deleted");
+// })
 
-// DELETE /items/:id
-app.delete<{ id: string }>("/items/:id", (req, res) => {
-  const matchingSignature = getDbItemById(parseInt(req.params.id));
-  if (matchingSignature === "not found") {
-    res.status(404).json(matchingSignature);
-  } else {
-    res.status(200).json(matchingSignature);
-  }
-});
 
-// PATCH /items/:id
-app.patch<{ id: string }, {}, Partial<DbItem>>("/items/:id", (req, res) => {
-  const matchingSignature = updateDbItemById(parseInt(req.params.id), req.body);
-  if (matchingSignature === "not found") {
-    res.status(404).json(matchingSignature);
-  } else {
-    res.status(200).json(matchingSignature);
-  }
-});
 
 app.listen(PORT_NUMBER, () => {
   console.log(`Server is listening on port ${PORT_NUMBER}!`);
