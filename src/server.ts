@@ -49,6 +49,22 @@ app.put("/:id", async (req, res) => {
   res.json("todo was updated");
 });
 
+app.put("/complete/true/:id", async (req, res) => {
+  const { id } = req.params;
+  const markCompleted = await client.query(
+    'UPDATE todos SET completed = "false" WHERE id=$1',
+    [id]
+  );
+});
+
+app.put("/complete/false/:id", async (req, res) => {
+  const { id } = req.params;
+  const markCompleted = await client.query(
+    'UPDATE todos SET completed = "true" WHERE id=$1',
+    [id]
+  );
+});
+
 app.delete("/:id", async (req, res) => {
   const { id } = req.params;
   const deleteTodo = await client.query("DELETE FROM todos WHERE id=$1", [id]);
