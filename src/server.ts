@@ -52,7 +52,7 @@ app.put("/:id", async (req, res) => {
 app.put("/complete/true/:id", async (req, res) => {
   const { id } = req.params;
   const markCompleted = await client.query(
-    'UPDATE todos SET completed = "false" WHERE id=$1',
+    "UPDATE todos SET completed = false WHERE id=$1",
     [id]
   );
 });
@@ -60,7 +60,7 @@ app.put("/complete/true/:id", async (req, res) => {
 app.put("/complete/false/:id", async (req, res) => {
   const { id } = req.params;
   const markCompleted = await client.query(
-    'UPDATE todos SET completed = "true" WHERE id=$1',
+    "UPDATE todos SET completed = true WHERE id=$1",
     [id]
   );
 });
