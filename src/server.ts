@@ -30,12 +30,13 @@ async function handleSeeAllTodos(req: Request, res: Response) {
 }
 
 app.post("/", async (req, res) => {
-  const { task, dueDate } = req.body;
+  const { task, due_date, completed } = req.body;
+  console.log(due_date);
   const newTodo = await client.query(
-    'INSERT INTO todos ("task", "due_date") VALUES($1, $2)',
-    [task, dueDate]
+    'INSERT INTO todos ("task", "due_date", "completed") VALUES($1, $2, $3)',
+    [task, due_date, completed]
   );
-  res.json(newTodo);
+  res.json("new todo posted");
 });
 
 app.put("/:id", async (req, res) => {
