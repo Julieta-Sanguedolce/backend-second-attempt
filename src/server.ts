@@ -11,12 +11,6 @@ const client = new pg.Client({
   connectionString: process.env.DATABASE_URL,
 });
 
-// const thingsToDo = [
-//   { id: 1, action: "Read Selene", date: "08/08/2023", completed: "No" },
-//   { id: 2, action: "Finish todo app", date: "05/08/2023", completed: "Yes" },
-//   { id: 3, action: "Plan trip", date: "10/08/2023", completed: "No" },
-// ];
-
 /** Parses JSON data in a request automatically */
 app.use(express.json());
 /** To allow 'Cross-Origin Resource Sharing': https://en.wikipedia.org/wiki/Cross-origin_resource_sharing */
@@ -96,3 +90,9 @@ app.delete("/:id", async (req, res) => {
 app.listen(PORT_NUMBER, () => {
   console.log(`Server is listening on port ${PORT_NUMBER}!`);
 });
+
+// const thingsToDo = [
+//   { id: 1, action: "Read Selene", date: "08/08/2023", completed: "No" },
+//   { id: 2, action: "Finish todo app", date: "05/08/2023", completed: "Yes" },
+//   { id: 3, action: "Plan trip", date: "10/08/2023", completed: "No" },
+// ];
