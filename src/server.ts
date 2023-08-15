@@ -7,6 +7,9 @@ import "dotenv/config";
 
 const app = express();
 
+// read in contents of any environment variables in the .env file
+dotenv.config();
+
 const client = new pg.Client({
   connectionString: process.env.DATABASE_URL,
 });
@@ -16,19 +19,14 @@ app.use(express.json());
 /** To allow 'Cross-Origin Resource Sharing': https://en.wikipedia.org/wiki/Cross-origin_resource_sharing */
 app.use(cors());
 
-// read in contents of any environment variables in the .env file
-dotenv.config();
-
 // use the environment variable PORT, or 4000 as a fallback
-const PORT_NUMBER = process.env.PORT ?? 4001;
+const PORT_NUMBER = process.env.PORT ?? 4000;
 
 app.get("/", handleSeeAllTodos);
 
 async function handleSeeAllTodos(req: Request, res: Response) {
-  await client.connect();
   const allTodos = await client.query('SELECT * FROM "todos"');
   res.json(allTodos.rows);
-  await client.end();
 }
 
 app.post("/", async (req, res) => {
@@ -66,17 +64,14 @@ app.delete("/:id", async (req, res) => {
 //   res.send(`I now have ${thingsToDo.length} todos`)
 // })
 
-//not finished - need to add logic in app to delete
-// app.delete("/",(req,res)=> {
-//   const toDelete = parseInt(req.params.id);
-//   let index = thingsToDo.findIndex((task)=>task.id === toDelete)
-//   thingsToDo.splice(index,1);
-//   res.send("task deleted");
-// })
+async function connectToDBAndStartExpress() {
+  await client.connect();
+  app.listen(PORT_NUMBER, () => {
+    console.log(`Server is listening on port ${PORT_NUMBER}!`);
+  });
+}
 
-app.listen(PORT_NUMBER, () => {
-  console.log(`Server is listening on port ${PORT_NUMBER}!`);
-});
+connectToDBAndStartExpress();
 
 // const thingsToDo = [
 //   { id: 1, action: "Read Selene", date: "08/08/2023", completed: "No" },
