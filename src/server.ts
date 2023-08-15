@@ -28,45 +28,32 @@ async function handleSeeAllTodos(req: Request, res: Response) {
   await client.connect();
   const allTodos = await client.query('SELECT * FROM "todos"');
   res.json(allTodos.rows);
+  await client.end();
 }
 
 app.post("/", async (req, res) => {
-  try {
-    const { task, dueDate } = req.body;
-    const newTodo = await client.query(
-      'INSERT INTO todos ("task", "due_date") VALUES($1, $2)',
-      [task, dueDate]
-    );
-    res.json(newTodo);
-  } catch (err: any) {
-    console.error(err.message);
-  }
+  const { task, dueDate } = req.body;
+  const newTodo = await client.query(
+    'INSERT INTO todos ("task", "due_date") VALUES($1, $2)',
+    [task, dueDate]
+  );
+  res.json(newTodo);
 });
 
 app.put("/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { task, dueDate, completed } = req.body;
-    const updateTodo = await client.query(
-      "UPDATE todos SET task = $2, due_date = $3, completed = $4 WHERE id=$1",
-      [id, task, dueDate, completed]
-    );
-    res.json("todo was updated");
-  } catch (err: any) {
-    console.error(err.message);
-  }
+  const { id } = req.params;
+  const { task, dueDate, completed } = req.body;
+  const updateTodo = await client.query(
+    "UPDATE todos SET task = $2, due_date = $3, completed = $4 WHERE id=$1",
+    [id, task, dueDate, completed]
+  );
+  res.json("todo was updated");
 });
 
 app.delete("/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const deleteTodo = await client.query("DELETE FROM todos WHERE id=$1", [
-      id,
-    ]);
-    res.json("todo was deleted");
-  } catch (err: any) {
-    console.error(err.message);
-  }
+  const { id } = req.params;
+  const deleteTodo = await client.query("DELETE FROM todos WHERE id=$1", [id]);
+  res.json("todo was deleted");
 });
 
 // OLD CODE
