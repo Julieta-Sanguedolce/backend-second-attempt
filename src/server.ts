@@ -41,10 +41,10 @@ app.post("/", async (req, res) => {
 
 app.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const { task, dueDate, completed } = req.body;
+  const { task } = req.body;
   const updateTodo = await client.query(
-    "UPDATE todos SET task = $2, due_date = $3, completed = $4 WHERE id=$1",
-    [id, task, dueDate, completed]
+    "UPDATE todos SET task = $2 WHERE id=$1",
+    [id, task]
   );
   res.json("todo was updated");
 });
