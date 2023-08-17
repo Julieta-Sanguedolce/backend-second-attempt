@@ -41,7 +41,7 @@ app.post("/", async (req, res) => {
 
 app.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const { task } = req.body;
+  const task: string = req.body.task;
   const updateTodo = await client.query(
     "UPDATE todos SET task = $2 WHERE id=$1",
     [id, task]
