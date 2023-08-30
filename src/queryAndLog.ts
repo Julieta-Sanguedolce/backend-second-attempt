@@ -6,13 +6,14 @@ export default async function queryAndLog(
   client: pg.Client,
   sql: string,
   params?: (string | number)[]
-) {
+): Promise<pg.QueryResult> {
   queryNumber++;
   console.log(
     `SQL START qNum: ${String(queryNumber).padStart(
       5,
       "0"
-    )} SQL: ${sql} params: [${params}]`
+    )} SQL: ${sql} params: `,
+    params
   );
   const startTime = performance.now();
   const result = await client.query(sql, params);
@@ -22,7 +23,11 @@ export default async function queryAndLog(
   console.log(
     `SQL END qNum: ${String(queryNumber).padStart(5, "0")} time: ${String(
       elapsedTime
-    ).padStart(5, "0")}ms rowCount: ${rowCount} SQL: ${sql} params: [${params}]`
+    ).padStart(7, "0")}ms rowCount: ${String(rowCount).padStart(
+      3,
+      "0"
+    )} SQL: ${sql} params:`,
+    params
   );
   return result;
 }
