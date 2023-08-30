@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import pg from "pg";
 import "dotenv/config";
+import queryAndLog from "./queryAndLog";
 
 const app = express();
 
@@ -25,14 +26,14 @@ const PORT_NUMBER = process.env.PORT ?? 4000;
 app.get("/", handleSeeAllTodos);
 
 async function handleSeeAllTodos(req: Request, res: Response) {
-  const allTodos = await client.query('SELECT * FROM "todos"');
+  const allTodos = await queryAndLog(client, 'SELECT * FROM "todos"');
   res.json(allTodos.rows);
 }
 
 app.post("/", async (req, res) => {
   const { task, due_date, completed } = req.body;
-  console.log(due_date);
-  const newTodo = await client.query(
+  await queryAndLog(
+    client,
     'INSERT INTO todos ("task", "due_date", "completed") VALUES($1, $2, $3)',
     [task, due_date, completed]
   );
@@ -42,32 +43,25 @@ app.post("/", async (req, res) => {
 app.put("/:id", async (req, res) => {
   const { id } = req.params;
   const task: string = req.body.task;
-  const updateTodo = await client.query(
-    "UPDATE todos SET task = $2 WHERE id=$1",
-    [id, task]
-  );
+  await client.query("UPDATE todos SET task = $2 WHERE id=$1", [id, task]);
   res.json("todo was updated");
 });
 
 app.put("/complete/true/:id", async (req, res) => {
   const { id } = req.params;
-  const markCompleted = await client.query(
-    "UPDATE todos SET completed = false WHERE id=$1",
-    [id]
-  );
+  await client.query("UPDATE todos SET completed = false WHERE id=$1", [id]);
+  res.json("marked as not completed");
 });
 
 app.put("/complete/false/:id", async (req, res) => {
   const { id } = req.params;
-  const markCompleted = await client.query(
-    "UPDATE todos SET completed = true WHERE id=$1",
-    [id]
-  );
+  await client.query("UPDATE todos SET completed = true WHERE id=$1", [id]);
+  res.json("marked as completed");
 });
 
 app.delete("/:id", async (req, res) => {
   const { id } = req.params;
-  const deleteTodo = await client.query("DELETE FROM todos WHERE id=$1", [id]);
+  await client.query("DELETE FROM todos WHERE id=$1", [id]);
   res.json("todo was deleted");
 });
 
